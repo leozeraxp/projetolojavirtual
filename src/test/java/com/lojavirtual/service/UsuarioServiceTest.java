@@ -55,4 +55,75 @@ public class UsuarioServiceTest {
         Throwable throwable = Assertions.catchThrowable(() -> service.salvar(usuario, null));
         Assertions.assertThat(throwable).isInstanceOf(RegraNegocioException.class).hasMessage(String.join("\r\n",msg));
     }
+
+    @Test
+    public  void deveRetornarErroAoTerCamposEmailESenhaNulos(){
+        Usuario usuario = Usuario.builder().nome("nome").build();
+        List<String> msg = new ArrayList<>(Arrays.asList(
+                "O email do usuário está vazio",
+                "A senha do usuário é nula ou vazia!"));
+
+        Throwable throwable = Assertions.catchThrowable(() -> service.salvar(usuario, null));
+        Assertions.assertThat(throwable).isInstanceOf(RegraNegocioException.class).hasMessage(String.join("\r\n",msg));
+    }
+
+    @Test
+    public  void deveRetornarErroAoTerCamposNulosEmailEmBranco(){
+        Usuario usuario = Usuario.builder().nome("nome").email("").build();
+        List<String> msg = new ArrayList<>(Arrays.asList(
+                "O email do usuário está vazio",
+                "A senha do usuário é nula ou vazia!"));
+
+        Throwable throwable = Assertions.catchThrowable(() -> service.salvar(usuario, null));
+        Assertions.assertThat(throwable).isInstanceOf(RegraNegocioException.class).hasMessage(String.join("\r\n",msg));
+    }
+
+    @Test
+    public  void deveRetornarErroAoTerCamposNulosEmailJaCadastrado(){
+        repository.save(Usuario.builder().email("email@email.com").build());
+
+        Usuario usuario = Usuario.builder().nome("nome").email("email@email.com").build();
+        List<String> msg = new ArrayList<>(Arrays.asList(
+                "Este email já foi cadastrado em nosso sistema!",
+                "A senha do usuário é nula ou vazia!"));
+
+        Throwable throwable = Assertions.catchThrowable(() -> service.salvar(usuario, null));
+        Assertions.assertThat(throwable).isInstanceOf(RegraNegocioException.class).hasMessage(String.join("\r\n",msg));
+    }
+    @Test
+    public  void deveRetornarErroAoTerSenhaNula(){
+        Usuario usuario = Usuario.builder().nome("nome").email("emailinvalido@email.com").build();
+        List<String> msg = new ArrayList<>(Arrays.asList(
+                "A senha do usuário é nula ou vazia!"));
+
+        Throwable throwable = Assertions.catchThrowable(() -> service.salvar(usuario, null));
+        Assertions.assertThat(throwable).isInstanceOf(RegraNegocioException.class).hasMessage(String.join("\r\n",msg));
+    }
+
+    @Test
+    public  void deveRetornarErroAoTerSenhaEmBranco(){
+        Usuario usuario = Usuario.builder().nome("nome").email("emailinvalido@email.com").senha("").build();
+        List<String> msg = new ArrayList<>(Arrays.asList(
+                "A senha do usuário é nula ou vazia!"));
+
+        Throwable throwable = Assertions.catchThrowable(() -> service.salvar(usuario, null));
+        Assertions.assertThat(throwable).isInstanceOf(RegraNegocioException.class).hasMessage(String.join("\r\n",msg));
+    }
+
+    @Test
+    public  void deveRetornarErroAoTerSenhasDiferentes(){
+        Usuario usuario = Usuario.builder().nome("nome").email("emailinvalido@email.com").senha("123").build();
+        List<String> msg = new ArrayList<>(Arrays.asList(
+                "As senhas são diferentes!"));
+
+        Throwable throwable = Assertions.catchThrowable(() -> service.salvar(usuario, "321"));
+        Assertions.assertThat(throwable).isInstanceOf(RegraNegocioException.class).hasMessage(String.join("\r\n",msg));
+    }
+
+    @Test
+    public  void deveRetornarVazioAoTerTudoPreenchidoCorretamente(){
+        Usuario usuario = Usuario.builder().nome("nome").email("emailnaocadastrado@email.com").senha("123").build();
+
+        Assertions.assertThatNoException().isThrownBy(() -> service.salvar(usuario, "123"));
+    }
 }
