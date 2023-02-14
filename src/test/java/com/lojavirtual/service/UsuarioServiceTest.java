@@ -126,4 +126,11 @@ public class UsuarioServiceTest {
 
         Assertions.assertThatNoException().isThrownBy(() -> service.salvar(usuario, "123"));
     }
+
+    @Test
+    public void deveListarusuariosCadastrados(){
+        Iterable<Usuario> listar = service.listar();
+
+        Assertions.assertThat(listar).isNotEmpty();
+    }
 }

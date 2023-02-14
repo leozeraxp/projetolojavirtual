@@ -29,7 +29,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Iterable<Usuario> listar() {
-        return null;
+        return repository.findAll();
     }
 
     @Override
